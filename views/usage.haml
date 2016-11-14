@@ -1,0 +1,17 @@
+- shoturi = url('/shot')
+- target = u(@target || 'http://google.com/')
+%pre
+  :escaped
+    Usage Example: 
+     - Simple:
+       #{shoturi}?#{target}
+     - Get small (64x64) image:
+       #{shoturi}/small?#{target}
+     - Get large (256x256) image:
+       #{shoturi}/large?#{target}
+     - Get 800x600 image:
+       #{shoturi}/800x600?#{target}
+     - Set browser window size to 300x300:
+       #{shoturi}/-300x300?#{target}
+     - Specify window & image size:
+       #{shoturi}/800x800-800x800?#{target}

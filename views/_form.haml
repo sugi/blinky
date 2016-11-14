@@ -1,0 +1,13 @@
+%p Technical demo to take screenshot of any URL, powered by Webkit and Ruby.
+
+%p
+  Currently, no documentation except
+  %a{href: url('/usage')} really simple usage.
+  However, 
+  %a{href: 'http://github.com/sugi/webshot'}
+    all source code has provided under ruby lisence.
+  You can refer and modifiy this source freely.
+
+%form{action: url('/show')}
+  %input{type: "text", name: "uri", id: "param_uri", value: u(@uri), placeholder: 'Input URL (e.g. http://ruby-lang.org)'}<
+  %input{type: "submit", id: "submit", value: "Take ScreenShot"}>

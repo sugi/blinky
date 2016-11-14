@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Mozshot</title>
+<link href="default.css" media="screen" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<h1> MozShot </h1>
+
+<%= include_template '_simple_form' %>
+
+<div class="reqimages">
+  <img src='<%=h "#{@shotbase}/small?#{@uri}" %>' alt='' title='ScreenShot 64x64' width='64' height='64'>
+  <img src='<%=h "#{@shotbase}?#{@uri}" %>' alt='' title='ScreenShot 128x128' width='128' height='128'>
+  <img src='<%=h "#{@shotbase}/large?#{@uri}" %>' alt='' title='ScreenShot 256x256' width='256' height='256'>
+</div>
+
+<h3>Image URL</h3>
+
+<ul>
+  <li>128x128: <a href="<%=h "#{@shotbase}?#{@uri}"%>"><%=h "#{@shotbase}?#{@uri}" %></a></li>
+  <li>256x256: <a href="<%=h "#{@shotbase}/large?#{@uri}" %>"><%=h "#{@shotbase}/large?#{@uri}" %></a></li>
+  <li>64x64: <a href="<%=h "#{@shotbase}/small?#{@uri}"%>"><%=h "#{@shotbase}/small?#{@uri}" %></a></li>
+</ul>
+
+<h3>Sample HTML code</h3>
+
+<pre class="htmlcode">
+&lt;a href="<%=h @uri %>"&gt;
+&lt;img alt="" width="128" height="128" border="0"
+    src="<%=h @shotbase %>?<%=h @uri %>"&gt;
+&lt;/a&gt;</pre>
+
+</body>
+</html>

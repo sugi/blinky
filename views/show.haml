@@ -1,0 +1,20 @@
+= haml :_form
+
+- size_defs = {'': 128, '/small': 64, '/large': 256, '/xlarge': 512}
+.reqimages
+  - size_defs.keys.sort_by{|s| size_defs[s]}.each do |sym|
+    - pix = size_defs[sym]
+    %img{src: url("/shot#{sym}?#{u @uri}"), alt: '', title: "ScreenShot #{pix}x#{pix}", width: pix, height: pix}
+
+%h3 Image URLs
+
+%ul
+  - size_defs.each do |sym, pix|
+    %li
+      = "#{pix}x#{pix}:"
+      %a{href: url("/shot#{sym}?#{u @uri}")}= url("/shot#{sym}?#{u @uri}")
+
+%h3 Sample HTML code
+
+%pre.htmlcode
+  =h %Q{<a href="#{u @uri}"><img alt="" width="128" height="128" border="0" src="#{url("/shot?#{u @uri}")}"></a>}

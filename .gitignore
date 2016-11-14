@@ -1,0 +1,9 @@
+/cache/
+/tmp/
+*~
+.#*#
+.*.sw?
+*.bak
+*.org
+*.orig
+*.tmp

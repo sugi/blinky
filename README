@@ -1,0 +1,10 @@
+README
+------
+
+WebShot - Web site thumbnail service with Ruby and Webkit.
+
+Copyright (C) 2016 Tatsuki Sugiura <sugi@nemui.org>
+Released unlder the License same as Ruby.
+
+Webshot is full-rewrite version of MozShot (http://github.com/sugi/mozshot).
+Current API (URL pattern) is compat with Mozshot.
