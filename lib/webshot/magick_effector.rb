@@ -1,3 +1,4 @@
+require 'webshot/version'
 require 'webshot/request'
 require 'rmagick'
 
@@ -23,7 +24,7 @@ module WebShot
 
     def shadow(m_img)
       m_img.background_color = '#333'
-      shadow = m_img.shadow(0, 0, [m_img.columns * 0.015, 16].min, 0.9)
+      shadow = m_img.shadow(0, 0, [m_img.columns * 0.015, 16].min, 0.6)
       shadow.background_color = '#FEFEFE'
       shadow.composite!(m_img, Magick::CenterGravity, Magick::OverCompositeOp)
       shadow
