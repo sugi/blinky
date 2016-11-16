@@ -1,0 +1,10 @@
+FROM ruby:2.3
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update
+RUN apt-get -y upgrade
+RUN apt-get -y install libqt5webkit5-dev qt5-default xvfb fonts-noto
+RUN adduser --system --home /webshot --group --uid 800 --disabled-password webshot
+ADD ./ /webshot
+RUN cd /webshot && bundle --without=web
+ENV APP_CMD exec xvfb-run -a bundle exec ruby -Ilib bin/shot.rb
+CMD /webshot/runapp

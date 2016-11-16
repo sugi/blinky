@@ -1,0 +1,12 @@
+FROM ruby:2.3
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update
+RUN apt-get -y upgrade
+RUN apt-get -y install gsfonts
+RUN adduser --system --home /webshot --group --uid 800 --disabled-password webshot
+ADD ./ /webshot
+RUN cd /webshot && bundle --without=shot
+EXPOSE 80
+ENV RACK_ENV deployment
+ENV APP_CMD exec bundle exec ruby -Ilib bin/frontend.rb -o 0
+CMD /webshot/runapp

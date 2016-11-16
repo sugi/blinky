@@ -1,0 +1,49 @@
+version: '2'
+services:
+  rabbitmq:
+    image: 'rabbitmq:3-management'
+    ports:
+      #- "5672:5672" # Node port
+      - "15672:15672" # managiment port
+  web:
+    build:
+      context: ..
+      dockerfile: Dockerfile.web
+    ports:
+      - "4567:4567"
+    links:
+      - rabbitmq
+    environment:
+      AMQ_URI: "amqp://guest:guest@rabbitmq:5672"
+    restart: on-failure
+    volumes:
+      - storage:/webshot/cache
+  shot:
+    build: 
+      context: ..
+      dockerfile: Dockerfile.shot
+    #dns:
+    #  - 8.8.8.8
+    links:
+      - rabbitmq
+    environment:
+      AMQ_URI: "amqp://guest:guest@rabbitmq:5672"
+    restart: on-failure
+  flush:
+    build: 
+      context: ..
+      dockerfile: Dockerfile.flush
+    links:
+      - rabbitmq
+    environment:
+      AMQ_URI: "amqp://guest:guest@rabbitmq:5672"
+    restart: on-failure
+    volumes:
+      - storage:/webshot/cache
+volumes:
+  storage:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: size=200m,uid=800

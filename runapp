@@ -1,0 +1,18 @@
+#!/bin/bash
+: ${APP_HOME_DIR:=/webshot}
+: ${APP_UID:=800}
+: ${APP_GID:=800}
+: ${APP_CMD:=exec bundle exec ruby -Ilib frontend.rb -o 0}
+
+if [ "$(id -g webshot)" -ne "${APP_GID}" ]; then
+  groupmod --non-unique --gid "${APP_GID}" webshot
+fi
+if [ "$(id -u webshot)" -ne "${APP_UID}" ]; then
+  usermod --non-unique --uid "${APP_UID}" webshot
+fi
+
+chown -h webshot:webshot /webshot
+chown -fr webshot:webshot /webshot/.cache # for fontconfig cache
+
+cd "${APP_HOME_DIR}"
+exec su -p -s /bin/bash -c "${APP_CMD}" webshot
