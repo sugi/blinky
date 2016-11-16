@@ -37,7 +37,7 @@ module WebShot
     def mq_conn
       @mutexes[:conn].synchronize do
         @mq_conn and return @mq_conn
-        conn = @mq_conn = Bunny.new(mq_server)
+        conn = @mq_conn = Bunny.new(mq_server, logger: Utils.new_logger(progname: 'Bunny'))
         @mq_conn.start
         at_exit {
           conn && conn.close

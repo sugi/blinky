@@ -8,10 +8,20 @@ module WebShot
 
     def logger
       @logger and return @logger
-      @logger = config.logger_class.new(config.logger_out)
-      @logger.level = config.loglevel
-      @logger.progname = self.class.to_s
-      @logger
+      @logger = Utils.new_logger(progname: self.class.to_s)
+    end
+
+    module_function
+    def new_logger(opts = {})
+      conf = WebShot.config
+      logger = conf.logger_class.new(conf.logger_out)
+      {
+        level: conf.loglevel,
+        progname: 'WebShot',
+      }.merge(opts).each do |key, val|
+        logger.public_send "#{key}=", val
+      end
+      logger
     end
   end
 end
