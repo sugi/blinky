@@ -1,7 +1,5 @@
 #!/usr/bin/ruby
-require 'webshot/storage'
-require 'yaml'
-require 'pp'
+require 'webshot'
 
 WebShot.configure do |c|
   c.loglevel = Logger::DEBUG
