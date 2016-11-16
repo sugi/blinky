@@ -7,3 +7,4 @@
 *.org
 *.orig
 *.tmp
+/screenshot.png
