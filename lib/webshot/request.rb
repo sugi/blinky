@@ -1,3 +1,5 @@
+require 'webshot/version'
+require 'webshot/utils'
 require 'digest/sha1'
 require 'digest/md5'
 

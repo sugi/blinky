@@ -1,4 +1,5 @@
 require 'logger'
+require 'yaml'
 
 module WebShot
   class Config
@@ -12,12 +13,8 @@ module WebShot
       end
     end
 
-    attr_accessor :loglevel
-    attr_accessor :logger_class
-    attr_accessor :logger_out
-    attr_accessor :storage_dir
-    attr_accessor :mq_server
-    attr_accessor :proxy
+    attr_accessor :loglevel, :logger_class, :logger_out,
+      :storage_dir, :mq_server, :proxy, :failimage_maxtry
 
     def initialize
       @loglevel = Logger::INFO
@@ -29,6 +26,7 @@ module WebShot
       if ENV['http_proxy'] && !ENV['http_proxy'].empty?
         @proxy = ENV['http_proxy']
       end
+      @failimage_maxtry = 3
     end
   end
 
@@ -39,5 +37,11 @@ module WebShot
 
   def configure(&block)
     Config.modify(&block)
+  end
+
+  def read_config_file(path)
+    YAML.load_file(path).each do |key, val|
+      config.public_send "#{key}=", val
+    end
   end
 end

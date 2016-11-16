@@ -1,4 +1,5 @@
 require 'pstore'
+require 'webshot/version'
 require 'webshot/utils'
 require 'webshot/request'
 require 'webshot/magick_effector'
@@ -72,13 +73,14 @@ module WebShot
       end
       unless File.exists? path
         return info.merge(mtime: info[:queued_at], uri: req.uri,
+                          cache_control: :no_cache, status: 'waiting',
                           etag: req.ident + '@' + info[:queued_at].to_f.to_s,
                           blob: MagickEffector.gen_waitimage(req).to_blob)
       end
 
-      info.merge(mtime: info[:updated_at], uri: req.uri,
+      info.merge(mtime: info[:updated_at], uri: req.uri, status: 'stable',
                  etag: req.ident + '@' + info[:updated_at].to_f.to_s,
-                 blob: File.read(path))
+                 cache_control: :public, blob: File.read(path, encoding: 'ascii-8bit'))
     end
 
     def auto_enqueue(req)
@@ -106,7 +108,7 @@ module WebShot
     def enqueue(req)
       mq_req.publish(Marshal.dump(req), persistent: true)
       pinfo(req).transaction do |ps|
-        ps[:queued_at] = Time.now
+        ps[:updated_at] = ps[:queued_at] = Time.now
       end
       logger.info "Add reqeust queue: #{req.to_hash.inspect}"
     end
@@ -120,10 +122,16 @@ module WebShot
       end
     end
 
-    def push_result(req, blob)
+    def push_result(req, blob_or_msg, is_error = false)
       ret = {req: req}
-      logger.info "Add result to queue: blob length = #{blob.length}, #{req.to_hash.inspect} "
-      ret[:blob] = blob
+      if is_error
+        ret[:message] = blob_or_msg
+        ret[:error] = true
+        logger.info "Add result to queue: failed (#{blob_or_msg})"
+      else
+        logger.info "Add result to queue: blob length = #{blob_or_msg.to_s.length}, #{req.to_hash.inspect}"
+        ret[:blob] = blob_or_msg
+      end
       mq_ret.publish(Marshal.dump(ret), persistent: true)
     end
 
@@ -144,20 +152,30 @@ module WebShot
           req = ret[:req]
           path = get_path(req)
           info = req.to_hash.merge updated_at: Time.now
-          if !ret[:blob] || ret[:blob].empty? || ret[:blob] == 'false'
-            File.write(path, MagickEffector.gen_failimage(req).to_blob)
+          if ret[:error] || !ret[:blob] || ret[:blob].empty?
+            pinfo(req).transaction(true) do |pi|
+              info[:failcount] = pi[:failcount].to_i + 1
+            end
+            info[:error_message] = ret[:message]
             info[:failed] = true
             info[:last_failed_at] = Time.now
+            logger.debug "Update fail count for #{req.uri}"
+            if info[:failcount] >= config.failimage_maxtry
+              logger.debug "Max fail count has been exceeded (#{info[:failcount]} >= #{config.failimage_maxtry})"
+              File.write(path, MagickEffector.gen_failimage(req).to_blob)
+              logger.info "Flush FAILED image: #{path} (#{req.uri})"
+            end
           else
-            File.write(path, ret[:blob])
             info[:failed] = false
+            File.write(path, ret[:blob])
+            logger.info "Flush image: #{path} (#{req.uri})"
           end
           pinfo(req).transaction do |ps|
             info.each do |k, v|
               ps[k.to_sym] = v
             end
           end
-          logger.info "Flush image:#{info[:failed] ? ' [FAILED]' : ''} #{path} (#{req.uri})"
+          logger.debug "Flush image info: #{path}.info"
         end
       rescue Interrupt => e
         # exit
