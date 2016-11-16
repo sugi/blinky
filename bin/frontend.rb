@@ -21,7 +21,9 @@ set :root, (Pathname.new(__FILE__) + '..').dirname
 if ENV["RACK_ENV"] == "deployment"
   set :environment, :production
 end
-config_file "#{settings.root}/webshot-conf.yml" # load setting to set :environment
+conffile = "#{settings.root}/webshot-conf.yml"
+File.exists?(conffile) and
+  config_file conffile # load setting to set :environment
 
 if development?
   require 'sinatra/reloader'
@@ -31,9 +33,11 @@ end
 
 set :server, %w[puma thin unicorn mongrel webrick]
 
-config_file "#{settings.root}/webshot-conf.yml" # load again to override
+if File.exists?(conffile)
+  config_file conffile
+  WebShot.read_config_file "#{settings.root}/webshot-conf.yml"
+end
 
-WebShot.read_config_file "#{settings.root}/webshot-conf.yml"
 SHOT_STORE = WebShot::Storage.new
 
 before do
