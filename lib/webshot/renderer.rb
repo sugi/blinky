@@ -18,7 +18,10 @@ module WebShot
         config.timeout = 30
         if WebShot.config.proxy
           uri = URI.parse(WebShot.config.proxy)
-          config.use_proxy(host: uri.host, port: uri.port, user: uri.user, pass: uri.pass)
+          proxy_info = {host: uri.host, port: uri.port}
+          uri.user     and proxy_info[:user] = uri.user
+          uri.password and proxy_info[:pass] = uri.password
+          config.use_proxy proxy_info
         end
         logger.debug "Webkit Config: #{config.inspect}"
       end
