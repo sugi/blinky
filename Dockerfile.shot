@@ -6,5 +6,5 @@ RUN apt-get -y install libqt5webkit5-dev qt5-default xvfb fonts-noto
 RUN adduser --system --home /webshot --group --uid 800 --disabled-password webshot
 ADD ./ /webshot
 RUN cd /webshot && bundle --without=web
-ENV APP_CMD exec xvfb-run -a bundle exec ruby -Ilib bin/shot.rb
+ENV APP_CMD "exec xvfb-run -a bash -c 'while bundle exec ruby -Ilib bin/shot.rb; do sleep 3; done'"
 CMD /webshot/runapp

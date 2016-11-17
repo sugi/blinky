@@ -14,7 +14,9 @@ module WebShot
     end
 
     attr_accessor :loglevel, :logger_class, :logger_out,
-      :storage_dir, :mq_server, :proxy, :failimage_maxtry
+    :storage_dir, :mq_server, :proxy, :failimage_maxtry,
+    :webkit_max_request, :webkit_renew_sleep, :webkit_crash_retry,
+    :webkit_load_timeout, :shot_max_request
     attr_reader :forbidden_url_pattern
 
     def initialize
@@ -27,7 +29,12 @@ module WebShot
       if ENV['http_proxy'] && !ENV['http_proxy'].empty?
         @proxy = ENV['http_proxy']
       end
-      @failimage_maxtry = 3
+      @failimage_maxtry = 5
+      @webkit_max_request = 50
+      @webkit_renew_sleep = 2
+      @webkit_crash_retry = 3
+      @webkit_load_timeout = 30
+      @shot_max_request = 120
       @forbidden_url_pattern = nil
     end
   end
