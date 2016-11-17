@@ -32,9 +32,6 @@ if development?
 end
 
 set :server, %w[puma thin unicorn mongrel webrick]
-WebShot.configure do |conf|
-  conf.forbidden_url_pattern = %r{^https?://(?:[^.]+$|10\.|172\.(?:1[6-9]|2[0-9]|3[01])\.|192\.168\.|127\.|0\.|169\.254\.|2(?:2[4-9]|[3-5][0-9])\.)}
-end
 
 if File.exists?(conffile)
   config_file conffile

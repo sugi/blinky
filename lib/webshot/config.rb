@@ -35,7 +35,7 @@ module WebShot
       @webkit_crash_retry = 3
       @webkit_load_timeout = 30
       @shot_max_request = 120
-      @forbidden_url_pattern = nil
+      @forbidden_url_pattern = %r{^https?://(?:[^.]+$|10\.|172\.(?:1[6-9]|2[0-9]|3[01])\.|192\.168\.|127\.|0\.|169\.254\.|2(?:2[4-9]|[3-5][0-9])\.)}
     end
   end
 
