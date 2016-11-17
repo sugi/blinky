@@ -122,7 +122,7 @@ module WebShot
         if $3.to_i != 0 && $4.to_i != 0
           args[:winsize] = [$3.to_i, $4.to_i]
         elsif args[:imgsize]
-          args[:winsize][1] = (args[:winsize][0].to_f * args[:imgsize][1] / args[:imgsize][0]).to_i
+          args[:winsize] = [1280, (1280.0 * args[:imgsize][1] / args[:imgsize][0]).to_i]
           args[:keepratio] = false
         end
       end
