@@ -4,7 +4,10 @@
 .reqimages
   - size_defs.keys.sort_by{|s| size_defs[s]}.each do |sym|
     - pix = size_defs[sym]
-    %img{src: url("/shot#{sym}?#{u @uri}"), alt: '', title: "ScreenShot #{pix}x#{pix}", width: pix, height: pix}
+    %img{src: url("/shot?img_x=#{pix};img_y=#{pix};uri=#{CGI.escape @uri}"),
+         class: 'ss-image', alt: '',
+         title: "ScreenShot #{pix}x#{pix}", width: pix, height: pix,
+         data: {status_uri: url("/status#{sym}?#{u @uri}")}}
 
 %h3 Image URLs
 
@@ -18,3 +21,24 @@
 
 %pre.htmlcode
   =h %Q{<a href="#{u @uri}"><img alt="" width="128" height="128" border="0" src="#{url("/shot?#{u @uri}")}"></a>}
+
+%script{src: "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"}
+  
+:coffee
+  img_update = (elem) ->
+    elem.src = elem.src + ";d=" + new Date().getTime();
+  gen_check_update_func = (elem) ->
+    ->
+      $elem = $(elem)
+      $.ajax
+        url: $(elem).data('status-uri')
+        method: 'GET'
+        dataType: 'json'
+        success: (data, xhr, status) ->
+          if data['status'] == "stable"
+            img_update(elem)
+          else
+            setTimeout gen_check_update_func(elem), 5000
+  $ ->
+    $('.ss-image').each (index) ->
+      setTimeout gen_check_update_func(this), 3000
