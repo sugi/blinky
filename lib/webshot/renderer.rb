@@ -61,10 +61,10 @@ module WebShot
 
     def save_url_to_file(uri, file, width, height)
       driver.visit uri.to_s
-      i = 0
+      i = 1
       while i < 8
-        sleep 0.1 * i
         break if driver.evaluate_script('document.readyState') == "complete"
+        sleep 0.1 * i
         i += 1
       end
       driver.execute_script "document.body.style.overflow = 'hidden';"
