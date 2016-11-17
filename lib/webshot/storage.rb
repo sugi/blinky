@@ -103,8 +103,8 @@ module WebShot
          return false
       end
 
-      failed         and qargs[:pirority] += 1
-      last_queued_at  or qargs[:pirority] += 2
+      failed         and qargs[:priority] += 1
+      last_queued_at  or qargs[:priority] += 2
 
       enqueue(req, qargs)
     end
