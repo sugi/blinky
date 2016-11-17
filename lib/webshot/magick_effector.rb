@@ -58,7 +58,7 @@ module WebShot
       gc.pointsize(16)
       gc.text_align(Magick::RightAlign)
       gc.font_weight(Magick::BoldWeight)
-      gc.fill('#FFCCCC')
+      gc.fill('#FFA0A0')
       gc.text(req.imgsize_x - 5, req.imgsize_y - 5, 'Error...')
       gc.draw(img)
       req.effect and
