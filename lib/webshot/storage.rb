@@ -31,7 +31,7 @@ module WebShot
       @mutexes = Hash.new {|h, k| h[k] = Mutex.new }
       @mutexes[:conn]; @mutexes[:ret]; @mutexes[:ret]; # pre-create...
     end
-    attr_reader :basepath
+    attr_reader :basepath, :mq_ch_req, :mq_ch_ret
     attr_accessor :queue_refresh_time, :image_refresh_time, :mq_server
     attr_writer :mq_conn, :mq_req, :mq_ret
 
@@ -50,16 +50,16 @@ module WebShot
     def mq_req
       @mutexes[:req].synchronize do
         @mq_req and return @mq_req
-        ch = mq_conn.create_channel
-        @mq_req = ch.queue("shot-requests")
+        @mq_ch_req = mq_conn.create_channel
+        @mq_req = @mq_ch_req.queue("shot-requests")
       end
     end
 
     def mq_ret
       @mutexes[:ret].synchronize do
         @mq_ret and return @mq_ret
-        ch = mq_conn.create_channel
-        @mq_ret = ch.queue("shot-results", durable: true)
+        @mq_ch_ret = mq_conn.create_channel
+        @mq_ret = @mq_ch_ret.queue("shot-results", durable: true)
       end
     end
 
@@ -114,11 +114,12 @@ module WebShot
     end
 
     def dequeue(block_p = true)
-      mq_req.subscribe(block: block_p) do |del_info, props, body|
-        Thread.current.abort_on_exception = true
-        ret = Marshal.load(body)
-        #logger.debug "Dequeue: #{ret.inspect}"
-        yield ret
+      mq_req.subscribe(block: block_p, manual_ack: true) do |del_info, props, body|
+        #Thread.current.abort_on_exception = true
+        req = Marshal.load(body)
+        #logger.debug "Dequeue: #{req.inspect}"
+        yield req
+        mq_ch_req.ack(del_info.delivery_tag.to_i)
       end
     end
 
@@ -127,9 +128,9 @@ module WebShot
       if is_error
         ret[:message] = blob_or_msg
         ret[:error] = true
-        logger.info "Add result to queue: failed (#{blob_or_msg})"
+        logger.info "Add result to queue: failed (#{blob_or_msg}) #{req.to_hash.inspect}"
       else
-        logger.info "Add result to queue: blob length = #{blob_or_msg.to_s.length}, #{req.to_hash.inspect}"
+        logger.info "Add result to queue: blob length = #{blob_or_msg.to_s.length} (#{req.uri})"
         ret[:blob] = blob_or_msg
       end
       mq_ret.publish(Marshal.dump(ret), persistent: true)
@@ -146,39 +147,36 @@ module WebShot
     end
 
     def flush(block_p = true)
-      begin
-        mq_ret.subscribe(block: block_p) do |del_info, props, body|
-          ret = Marshal.load(body)
-          req = ret[:req]
-          path = get_path(req)
-          info = req.to_hash.merge updated_at: Time.now
-          if ret[:error] || !ret[:blob] || ret[:blob].empty?
-            pinfo(req).transaction(true) do |pi|
-              info[:failcount] = pi[:failcount].to_i + 1
-            end
-            info[:error_message] = ret[:message]
-            info[:failed] = true
-            info[:last_failed_at] = Time.now
-            logger.debug "Update fail count for #{req.uri}"
-            if info[:failcount] >= config.failimage_maxtry
-              logger.debug "Max fail count has been exceeded (#{info[:failcount]} >= #{config.failimage_maxtry})"
-              File.write(path, MagickEffector.gen_failimage(req).to_blob)
-              logger.info "Flush FAILED image: #{path} (#{req.uri})"
-            end
-          else
-            info[:failed] = false
-            File.write(path, ret[:blob])
-            logger.info "Flush image: #{path} (#{req.uri})"
+      mq_ret.subscribe(block: block_p, manual_ack: true) do |del_info, props, body|
+        ret = Marshal.load(body)
+        req = ret[:req]
+        path = get_path(req)
+        info = req.to_hash.merge updated_at: Time.now
+        if ret[:error] || !ret[:blob] || ret[:blob].empty?
+          pinfo(req).transaction(true) do |pi|
+            info[:failcount] = pi[:failcount].to_i + 1
           end
-          pinfo(req).transaction do |ps|
-            info.each do |k, v|
-              ps[k.to_sym] = v
-            end
+          info[:error_message] = ret[:message]
+          info[:failed] = true
+          info[:last_failed_at] = Time.now
+          logger.debug "Update fail count for #{req.uri}"
+          if info[:failcount] >= config.failimage_maxtry
+            logger.debug "Max fail count has been exceeded (#{info[:failcount]} >= #{config.failimage_maxtry})"
+            File.write(path, MagickEffector.gen_failimage(req).to_blob)
+            logger.info "Flush FAILED image: #{path} (#{req.uri})"
           end
-          logger.debug "Flush image info: #{path}.info"
+        else
+          info[:failed] = false
+          File.write(path, ret[:blob])
+          logger.info "Flush image: #{path} (#{req.uri})"
         end
-      rescue Interrupt => e
-        # exit
+        pinfo(req).transaction do |ps|
+          info.each do |k, v|
+            ps[k.to_sym] = v
+          end
+        end
+        logger.debug "Flush image info: #{path}.info"
+        mq_ch_ret.ack(del_info.delivery_tag.to_i)
       end
     end
 
