@@ -6,7 +6,7 @@ RUN apt-get -y install gsfonts
 RUN adduser --system --home /webshot --group --uid 800 --disabled-password webshot
 ADD ./ /webshot
 RUN cd /webshot && bundle --without=shot
-EXPOSE 80
+EXPOSE 4567
 ENV RACK_ENV deployment
 ENV APP_CMD exec bundle exec ruby -Ilib bin/frontend.rb -o 0
 CMD /webshot/runapp
