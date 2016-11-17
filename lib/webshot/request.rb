@@ -6,6 +6,7 @@ require 'digest/md5'
 
 module WebShot
   class Request
+    include Utils
     def self.from_cgi(cgi)
       if !cgi['uri'].empty?
         from_cgi_standard(cgi)
