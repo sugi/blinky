@@ -20,8 +20,8 @@ module WebShot
 
     def initialize(basepath = nil)
       @basepath = basepath || config.storage_dir
-      @queue_refresh_time = 600
-      @image_refresh_time = 3 * 24 * 3600
+      @queue_refresh_time = config.queue_refresh_time
+      @image_refresh_time = config.image_refresh_time
       @mq_server = config.mq_server
       @mq_conn = nil
       @mq_req = nil

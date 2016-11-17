@@ -16,7 +16,8 @@ module WebShot
     attr_accessor :loglevel, :logger_class, :logger_out,
     :storage_dir, :mq_server, :proxy, :failimage_maxtry,
     :webkit_max_request, :webkit_renew_sleep, :webkit_crash_retry,
-    :webkit_load_timeout, :shot_max_request
+    :webkit_load_timeout, :shot_max_request, :queue_refresh_time,
+    :image_refresh_time
     attr_reader :forbidden_url_pattern
 
     def initialize
@@ -36,6 +37,8 @@ module WebShot
       @webkit_load_timeout = 30
       @shot_max_request = 120
       @forbidden_url_pattern = %r{^https?://(?:[^.]+$|10\.|172\.(?:1[6-9]|2[0-9]|3[01])\.|192\.168\.|127\.|0\.|169\.254\.|2(?:2[4-9]|[3-5][0-9])\.)}
+      @queue_refresh_time = 3 * 3600
+      @image_refresh_time = 3 * 24 * 3600
     end
   end
 
