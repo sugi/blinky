@@ -12,7 +12,7 @@ if [ "$(id -u webshot)" -ne "${APP_UID}" ]; then
 fi
 
 chown -h webshot:webshot /webshot
-chown -fr webshot:webshot /webshot/.cache # for fontconfig cache
+chown -fR webshot:webshot /webshot/.cache # for fontconfig cache
 
 cd "${APP_HOME_DIR}"
 exec su -p -s /bin/bash -c "${APP_CMD}" webshot
