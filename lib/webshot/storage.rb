@@ -51,7 +51,7 @@ module WebShot
       @mutexes[:req].synchronize do
         @mq_req and return @mq_req
         @mq_ch_req = mq_conn.create_channel
-        @mq_req = @mq_ch_req.queue("shot-requests")
+        @mq_req = @mq_ch_req.queue("shot-requests", arguments: {'x-max-priority' => 10})
       end
     end
 
@@ -88,6 +88,7 @@ module WebShot
 
       last_queued_at = nil
       failed = false
+      qargs = {priority: 0}
       pinfo(req).transaction(true) do |ps|
         last_queued_at = ps[:queued_at]
         failed = ps[:failed]
@@ -102,11 +103,14 @@ module WebShot
          return false
       end
 
-      enqueue(req)
+      failed         and qargs[:pirority] += 1
+      last_queued_at  or qargs[:pirority] += 2
+
+      enqueue(req, qargs)
     end
 
-    def enqueue(req)
-      mq_req.publish(Marshal.dump(req), persistent: true)
+    def enqueue(req, qargs = {})
+      mq_req.publish(Marshal.dump(req), {persistent: true}.merge(qargs))
       pinfo(req).transaction do |ps|
         ps[:updated_at] = ps[:queued_at] = Time.now
       end
