@@ -15,6 +15,7 @@ module WebShot
 
     attr_accessor :loglevel, :logger_class, :logger_out,
       :storage_dir, :mq_server, :proxy, :failimage_maxtry
+    attr_reader :forbidden_url_pattern
 
     def initialize
       @loglevel = Logger::INFO
@@ -27,7 +28,19 @@ module WebShot
         @proxy = ENV['http_proxy']
       end
       @failimage_maxtry = 3
+      @forbidden_url_pattern = nil
     end
+  end
+
+  def forbidden_url_pattern=(pat)
+    @forbidden_url_pattern =
+      if pat.nil? || pat.empty?
+        nil
+      elsif pat.respond_to?(:match)
+        pat
+      else
+        Regexp.new(pat)
+      end
   end
 
   module_function

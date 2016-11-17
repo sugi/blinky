@@ -1,4 +1,5 @@
 require 'webshot/version'
+require 'webshot/errors'
 require 'webshot/utils'
 require 'digest/sha1'
 require 'digest/md5'
@@ -208,6 +209,11 @@ module WebShot
       if uri.nil? || uri.empty? || uri !~ %r{^https?://[^.]+\.[^.]+}
         raise InvalidURI.new("Invalid URI: '#{uri}'")
       end
+      if config.forbidden_url_pattern &&
+          config.forbidden_url_pattern.match(uri.to_s)
+        raise ForbiddenURI.new("Forbidden URI: '#{uri}'")
+      end
+      true
     end
 
     def to_hash
