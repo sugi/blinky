@@ -78,7 +78,7 @@ module WebShot
         return info.merge(mtime: info[:queued_at], uri: req.uri,
                           cache_control: :no_cache, status: 'waiting',
                           etag: req.ident + '@' + info[:queued_at].to_f.to_s,
-                          blob: MagickEffector.gen_waitimage(req).to_blob)
+                          blob: MagickEffector.gen_waitimage_blob(req))
       end
 
       info.merge(mtime: info[:updated_at], uri: req.uri, status: 'stable',
@@ -169,7 +169,7 @@ module WebShot
           logger.debug "Update fail count for #{req.uri}"
           if info[:failcount] >= config.failimage_maxtry
             logger.debug "Max fail count has been exceeded (#{info[:failcount]} >= #{config.failimage_maxtry})"
-            File.write(path, MagickEffector.gen_failimage(req).to_blob)
+            File.write(path, MagickEffector.gen_failimage_blob(req))
             logger.info "Flush FAILED image: #{path} (#{req.uri})"
           end
         else

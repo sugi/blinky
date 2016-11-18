@@ -96,7 +96,9 @@ module WebShot
       img = MagickEffector.all img, req
       driver_req_count > config.webkit_max_request and renew_driver
       logger.debug "Rendering is completed (#{req.uri})"
-      img.to_blob
+      blob = img.to_blob
+      img.destroy!
+      blob
     end
 
   end

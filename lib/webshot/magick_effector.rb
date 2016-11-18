@@ -27,6 +27,7 @@ module WebShot
       shadow = m_img.shadow(0, 0, [m_img.columns * 0.015, 16].min, 0.6)
       shadow.background_color = '#FEFEFE'
       shadow.composite!(m_img, Magick::CenterGravity, Magick::OverCompositeOp)
+      m_img.destroy!
       shadow
     end
 
@@ -49,6 +50,13 @@ module WebShot
       img
     end
 
+    def gen_waitimage_blob(req)
+      img = gen_waitimage(req)
+      blob = img.to_blob
+      img.destroy!
+      blob
+    end
+
     def gen_failimage(req)
       img = gen_emptyimage(req.imgsize_x, req.imgsize_y)
       img = metadata(img, 'WebShot::URI' => req.uri)
@@ -67,6 +75,13 @@ module WebShot
       img
     end
 
+    def gen_failimage_blob(req)
+      img = gen_failimage(req)
+      blob = img.to_blob
+      img.destroy!
+      blob
+    end
+
     def gen_emptyimage(width, height)
       Magick::Image.new(width, height) {
         self.background_color = 'white'
@@ -77,8 +92,9 @@ module WebShot
       m_img = metadata(m_img, 'WebShot::URI' => req.uri)
       req.effect and
         m_img = shadow(m_img)
-      m_img = resize(m_img, req.real_imgsize_x, req.real_imgsize_y)
-      m_img
+      ret = resize(m_img, req.real_imgsize_x, req.real_imgsize_y)
+      m_img.destroy!
+      ret
     end
   end
 end
