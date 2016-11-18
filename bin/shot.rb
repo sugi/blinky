@@ -16,7 +16,7 @@ storage.dequeue do |req|
   count += 1
   logger.info "Starting process request ##{count}#{reqlimit ? "/#{reqlimit}" : ""}"
   begin
-    Timeout::timeout(WebShot.config.webkit_load_timeout * 1.2) {
+    Timeout::timeout([WebShot.config.webkit_load_timeout, WebShot.config.webkit_comminucation_timeout].max * 1.2) {
       storage.push_result req, renderer.render(req)
     }
   rescue => e

@@ -3,7 +3,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN echo "deb http://ftp.debian.org/debian jessie-backports main" > /etc/apt/sources.list.d/backports.list
 RUN apt-get update
 RUN apt-get -y upgrade; apt-get clean
-RUN apt-get -y install libqt5webkit5-dev qt5-default xvfb fonts-noto; apt-get clean
+RUN apt-get -y install fonts-noto libfontconfig1; apt-get clean
 RUN apt-get -y install -t jessie-backports fonts-noto-cjk; apt-get clean
 RUN adduser --system --home /webshot --group --uid 800 --disabled-password webshot
 ADD ./ /webshot

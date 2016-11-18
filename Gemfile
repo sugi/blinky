@@ -14,5 +14,5 @@ group :web do
 end
 
 group :shot do
-  gem 'capybara-webkit', github: 'sugi/capybara-webkit', branch: 'screenshot-improvements'
+  gem 'poltergeist'
 end
