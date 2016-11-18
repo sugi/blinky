@@ -22,7 +22,7 @@ module WebShot
       @basepath = basepath || config.storage_dir
       @queue_refresh_time = config.queue_refresh_time
       @image_refresh_time = config.image_refresh_time
-      @mq_server = config.mq_server
+      @amq_uri = config.amq_uri
       @mq_conn = nil
       @mq_req = nil
       @mq_ret = nil
@@ -32,13 +32,13 @@ module WebShot
       @mutexes[:conn]; @mutexes[:ret]; @mutexes[:ret]; # pre-create...
     end
     attr_reader :basepath, :mq_ch_req, :mq_ch_ret
-    attr_accessor :queue_refresh_time, :image_refresh_time, :mq_server
+    attr_accessor :queue_refresh_time, :image_refresh_time, :amq_uri
     attr_writer :mq_conn, :mq_req, :mq_ret
 
     def mq_conn
       @mutexes[:conn].synchronize do
         @mq_conn and return @mq_conn
-        conn = @mq_conn = Bunny.new(mq_server, logger: Utils.new_logger(progname: 'Bunny'))
+        conn = @mq_conn = Bunny.new(amq_uri, logger: Utils.new_logger(progname: 'Bunny'))
         @mq_conn.start
         at_exit {
           conn && conn.close
