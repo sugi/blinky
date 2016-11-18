@@ -51,7 +51,7 @@ module WebShot
       @webkit_server = nil
       @driver = nil
       begin
-        old_wserv.pid && Process.kill("TERM", old_wserv.pid)
+        old_wserv.pid && Process.kill("KILL", old_wserv.pid)
       rescue => e
         logger.error "Error on stop server #{e.inspect}"
       end
