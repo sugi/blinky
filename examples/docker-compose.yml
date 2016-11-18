@@ -14,7 +14,7 @@ services:
     links:
       - rabbitmq
     environment:
-      AMQ_URI: "amqp://guest:guest@rabbitmq:5672"
+      WS_AMQ_URI: "amqp://guest:guest@rabbitmq:5672"
     restart: on-failure
     volumes:
       - storage:/webshot/cache
@@ -22,13 +22,15 @@ services:
     build: 
       context: ..
       dockerfile: Dockerfile.shot
-    #dns:
-    #  - 8.8.8.8
+    dns:
+      - 8.8.8.8
     links:
       - rabbitmq
     environment:
-      AMQ_URI: "amqp://guest:guest@rabbitmq:5672"
+      WS_AMQ_URI: "amqp://guest:guest@rabbitmq:5672"
+      WS_SHOT_MAX_REQUEST: 20
     restart: on-failure
+    cpu_shares: 128
   flush:
     build: 
       context: ..
@@ -36,7 +38,7 @@ services:
     links:
       - rabbitmq
     environment:
-      AMQ_URI: "amqp://guest:guest@rabbitmq:5672"
+      WS_AMQ_URI: "amqp://guest:guest@rabbitmq:5672"
     restart: on-failure
     volumes:
       - storage:/webshot/cache
