@@ -18,7 +18,7 @@ module WebShot
       @@instances[basepath] = new(basepath)
     end
 
-    def initialize(basepath = nil)
+    def initialize(basepath = nil, opts = {})
       @basepath = basepath || config.storage_dir
       @queue_refresh_time = config.queue_refresh_time
       @image_refresh_time = config.image_refresh_time
@@ -26,19 +26,20 @@ module WebShot
       @mq_conn = nil
       @mq_req = nil
       @mq_ret = nil
+      @mq_threaded = true
       FileUtils.mkdir_p @basepath
       logger.debug "Initalized (dir: #{@basepath})"
       @mutexes = Hash.new {|h, k| h[k] = Mutex.new }
       @mutexes[:conn]; @mutexes[:ret]; @mutexes[:ret]; # pre-create...
+      opts.each {|k, v| public_send "#{k}=", v }
     end
     attr_reader :basepath, :mq_ch_req, :mq_ch_ret
-    attr_accessor :queue_refresh_time, :image_refresh_time, :amq_uri
-    attr_writer :mq_conn, :mq_req, :mq_ret
+    attr_accessor :queue_refresh_time, :image_refresh_time, :amq_uri, :mq_threaded
 
     def mq_conn
       @mutexes[:conn].synchronize do
         @mq_conn and return @mq_conn
-        conn = @mq_conn = Bunny.new(amq_uri, logger: Utils.new_logger(progname: 'Bunny'))
+        conn = @mq_conn = Bunny.new(amq_uri, threaded: mq_threaded, logger: Utils.new_logger(progname: 'Bunny'))
         @mq_conn.start
         at_exit {
           conn && conn.close

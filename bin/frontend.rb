@@ -38,7 +38,7 @@ if File.exists?(conffile)
   WebShot.read_config_file "#{settings.root}/webshot-conf.yml"
 end
 
-SHOT_STORE = WebShot::Storage.new
+SHOT_STORE = WebShot::Storage.new(nil, mq_threaded: false)
 
 before do
   logger.progname = 'WebShopt::Frontend'
