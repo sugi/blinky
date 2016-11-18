@@ -4,7 +4,7 @@
 .reqimages
   - size_defs.keys.sort_by{|s| size_defs[s]}.each do |sym|
     - pix = size_defs[sym]
-    %img{src: url("/shot?img_x=#{pix};img_y=#{pix};uri=#{CGI.escape @uri}"),
+    %img{src: url("/shot?img_x=#{pix};img_y=#{pix};keepratio=true;uri=#{CGI.escape @uri}"),
          class: 'ss-image', alt: '',
          title: "ScreenShot #{pix}x#{pix}", width: pix, height: pix,
          data: {status_uri: url("/status#{sym}?#{u @uri}")}}
