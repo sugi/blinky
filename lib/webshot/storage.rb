@@ -27,7 +27,6 @@ module WebShot
       @mq_req = nil
       @mq_ret = nil
       @mq_threaded = true
-      FileUtils.mkdir_p @basepath
       logger.debug "Initalized (dir: #{@basepath})"
       @mutexes = Hash.new {|h, k| h[k] = Mutex.new }
       @mutexes[:conn]; @mutexes[:ret]; @mutexes[:ret]; # pre-create...
@@ -158,6 +157,7 @@ module WebShot
         ret = Marshal.load(body)
         req = ret[:req]
         path = get_path(req)
+        FileUtils.mkdir_p File.dirname(path)
         info = req.to_hash.merge updated_at: Time.now
         if ret[:error] || !ret[:blob] || ret[:blob].empty?
           pinfo(req).transaction(true) do |pi|
