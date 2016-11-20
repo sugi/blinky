@@ -96,6 +96,7 @@ get '/show' do
   elsif @uri !~ %r{^https?://}
     @uri = "http://#{@uri}"
   end
+  cache_control :no_cache
   haml :show
 end
 
@@ -120,5 +121,6 @@ get '/usage' do
 end
 
 get '/' do
+  cache_control :no_cache
   haml :index
 end

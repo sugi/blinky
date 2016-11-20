@@ -123,9 +123,9 @@ module WebShot
       img.background_color = 'white'
       img = MagickEffector.all img, req
       logger.debug "Rendering is completed (#{req.uri})"
-      ret = img.to_blob
+      blob = img.to_blob
       img.destroy!
-      ret
+      blob
     end
 
   end
