@@ -11,6 +11,9 @@ h1 small {
     color: #999;
     font-size: 0.9rem;
 }
+h1 .title-icon {
+    color: #c00;
+}
 a:hover {
     /* text-decoration: underline; */
     border-bottom: blue 1px solid;
