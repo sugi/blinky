@@ -1,10 +1,10 @@
 #!/usr/bin/ruby
-require 'webshot/storage'
+require 'blinky/storage'
 
-conffile = File.join(File.dirname(__FILE__), '..', 'webshot-conf.yml')
+conffile = File.join(File.dirname(__FILE__), '..', 'blinky-conf.yml')
 if File.exists? conffile
-  WebShot.read_config_file conffile
+  Blinky.read_config_file conffile
 end
 
-s = WebShot::Storage.new
+s = Blinky::Storage.new
 s.flush

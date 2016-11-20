@@ -1,13 +1,13 @@
 #!/usr/bin/ruby
-require 'webshot'
+require 'blinky'
 require 'pp'
 
-WebShot.configure do |c|
+Blinky.configure do |c|
   c.loglevel = Logger::DEBUG
 end
 
-storage = WebShot::Storage.new
-renderer = WebShot::Renderer.new
+storage = Blinky::Storage.new
+renderer = Blinky::Renderer.new
 
 storage.dequeue(true) do |req|
   begin

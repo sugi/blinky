@@ -1,21 +1,21 @@
 README
 ------
 
-WebShot - Web site thumbnail service with Ruby and Webkit.
+Blinky - Web site thumbnail service with Ruby and Webkit.
 
 Copyright (C) 2016 Tatsuki Sugiura <sugi@nemui.org>
 Released unlder the License same as Ruby.
 
-Webshot is full-rewrite version of MozShot (http://github.com/sugi/mozshot).
+Blinky is full-rewrite version of MozShot (http://github.com/sugi/mozshot).
 Current API (URL pattern) compat with Mozshot.
 
 DEMO
 ----
 
-https://webshot.nemui.org/
+https://blinky.nemui.org/
 
 
 CODE
 ----
 
-http://github.com/sugi/webshot
+http://github.com/sugi/blinky

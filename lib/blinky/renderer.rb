@@ -1,14 +1,14 @@
-require 'webshot/errors'
-require 'webshot/utils'
-require 'webshot/request'
-require 'webshot/magick_effector'
+require 'blinky/errors'
+require 'blinky/utils'
+require 'blinky/request'
+require 'blinky/magick_effector'
 require 'capybara/poltergeist'
 require 'tmpdir'
 require 'uri'
 require 'pp'
 require 'timeout'
 
-module WebShot
+module Blinky
   class Renderer
     include Utils
 
@@ -43,7 +43,7 @@ module WebShot
         end
         dopts[:logger] = wrap_logger
       end
-      @driver = Capybara::Poltergeist::Driver.new "webshot-#{@driver_no}", dopts
+      @driver = Capybara::Poltergeist::Driver.new "blinky-#{@driver_no}", dopts
     end
 
     def renew_driver
@@ -60,8 +60,8 @@ module WebShot
         driver.visit uri.to_s
       rescue Capybara::Poltergeist::StatusFailError => e
         logger.error "Failed to load page (#{uri}): #{e.message}"
-        if load_tries <= WebShot.config.webkit_load_retry
-          logger.error "Retry to page load (#{load_tries}/#{WebShot.config.webkit_load_retry})..."
+        if load_tries <= Blinky.config.webkit_load_retry
+          logger.error "Retry to page load (#{load_tries}/#{Blinky.config.webkit_load_retry})..."
           renew_driver
           retry
         else

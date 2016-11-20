@@ -1,10 +1,10 @@
-require 'webshot/version'
-require 'webshot/errors'
-require 'webshot/utils'
+require 'blinky/version'
+require 'blinky/errors'
+require 'blinky/utils'
 require 'digest/sha1'
 require 'digest/md5'
 
-module WebShot
+module Blinky
   class Request
     include Utils
     def self.from_cgi(cgi)

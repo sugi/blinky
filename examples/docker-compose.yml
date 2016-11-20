@@ -17,7 +17,7 @@ services:
       WS_AMQ_URI: "amqp://guest:guest@rabbitmq:5672"
     restart: on-failure
     volumes:
-      - storage:/webshot/cache
+      - storage:/blinky/cache
   shot:
     build: 
       context: ..
@@ -41,7 +41,7 @@ services:
       WS_AMQ_URI: "amqp://guest:guest@rabbitmq:5672"
     restart: on-failure
     volumes:
-      - storage:/webshot/cache
+      - storage:/blinky/cache
 volumes:
   storage:
     driver: local
