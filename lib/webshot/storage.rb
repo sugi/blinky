@@ -27,7 +27,6 @@ module WebShot
       @mq_req = nil
       @mq_ret = nil
       @mq_threaded = true
-      FileUtils.mkdir_p @basepath
       logger.debug "Initalized (dir: #{@basepath})"
       @mutexes = Hash.new {|h, k| h[k] = Mutex.new }
       @mutexes[:conn]; @mutexes[:ret]; @mutexes[:ret]; # pre-create...
@@ -78,7 +77,7 @@ module WebShot
         return info.merge(mtime: info[:queued_at], uri: req.uri,
                           cache_control: :no_cache, status: 'waiting',
                           etag: req.ident + '@' + info[:queued_at].to_f.to_s,
-                          blob: MagickEffector.gen_waitimage(req).to_blob)
+                          blob: MagickEffector.gen_waitimage_blob(req))
       end
 
       info.merge(mtime: info[:updated_at], uri: req.uri, status: 'stable',
@@ -158,6 +157,7 @@ module WebShot
         ret = Marshal.load(body)
         req = ret[:req]
         path = get_path(req)
+        FileUtils.mkdir_p File.dirname(path)
         info = req.to_hash.merge updated_at: Time.now
         if ret[:error] || !ret[:blob] || ret[:blob].empty?
           pinfo(req).transaction(true) do |pi|
@@ -169,7 +169,7 @@ module WebShot
           logger.debug "Update fail count for #{req.uri}"
           if info[:failcount] >= config.failimage_maxtry
             logger.debug "Max fail count has been exceeded (#{info[:failcount]} >= #{config.failimage_maxtry})"
-            File.write(path, MagickEffector.gen_failimage(req).to_blob)
+            File.write(path, MagickEffector.gen_failimage_blob(req))
             logger.info "Flush FAILED image: #{path} (#{req.uri})"
           end
         else
