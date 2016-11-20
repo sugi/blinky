@@ -53,7 +53,7 @@ module Blinky
         proxy: 'http_proxy',
         amq_uri: 'AMQ_URI',
       }.each do |key, envkey|
-        instance_variable_get("@#{key}") and next
+        ENV["BL_#{key.upcase}"] and next
         ENV[envkey] or next
         ENV[envkey].empty? and next
         public_send "#{key}=", ENV[envkey]
