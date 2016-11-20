@@ -9,14 +9,15 @@ end
 storage = WebShot::Storage.new
 renderer = WebShot::Renderer.new
 logger = WebShot::Utils.new_logger progname: 'ShotWorker'
+config = WebShot.config
 
 count = 0
-reqlimit = WebShot.config.shot_max_request.to_i != 0 ? WebShot.config.shot_max_request.to_i : nil
+reqlimit = config.shot_max_request.to_i != 0 ? config.shot_max_request.to_i : nil
 storage.dequeue do |req|
   count += 1
   logger.info "Starting process request ##{count}#{reqlimit ? "/#{reqlimit}" : ""}"
   begin
-    Timeout::timeout([WebShot.config.webkit_load_timeout, WebShot.config.webkit_comminucation_timeout].max * 1.2) {
+    Timeout::timeout((config.webkit_load_timeout * (config.webkit_load_retry + 1) + config.page_complete_timeout) + 10) {
       storage.push_result req, renderer.render(req)
     }
   rescue => e

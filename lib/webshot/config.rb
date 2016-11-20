@@ -17,7 +17,7 @@ module WebShot
     :storage_dir, :amq_uri, :proxy, :failimage_maxtry,
     :webkit_max_request, :webkit_renew_sleep, :webkit_crash_retry,
     :webkit_load_timeout, :shot_max_request, :queue_refresh_time,
-    :image_refresh_time, :webkit_comminucation_timeout
+    :image_refresh_time, :webkit_load_retry, :page_complete_timeout
     attr_reader :forbidden_url_pattern
 
     def initialize
@@ -34,7 +34,8 @@ module WebShot
         webkit_renew_sleep: 2,
         webkit_crash_retry: 3,
         webkit_load_timeout: 30,
-        webkit_comminucation_timeout: 30,
+        webkit_load_retry: 1,
+        page_complete_timeout: 10,
         shot_max_request: 120,
         forbidden_url_pattern: %r{^https?://(?:[^.]+$|10\.|172\.(?:1[6-9]|2[0-9]|3[01])\.|192\.168\.|127\.|0\.|169\.254\.|2(?:2[4-9]|[3-5][0-9])\.)},
         queue_refresh_time: 3 * 3600,
