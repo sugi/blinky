@@ -40,7 +40,7 @@ module Blinky
         queue_refresh_time: 3 * 3600,
         image_refresh_time: 3 * 24 * 3600,
       }.each do |key, default|
-        envkey = "WS_#{key.upcase}"
+        envkey = "BL_#{key.upcase}"
         if ENV[envkey].nil? || ENV[envkey].empty?
           public_send "#{key}=", default
         else
