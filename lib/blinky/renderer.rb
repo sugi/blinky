@@ -48,7 +48,11 @@ module Blinky
 
     def renew_driver
       logger.info "Trying to renew driver..."
-      @driver.quit
+      begin
+        @driver && @driver.quit
+      rescue => e
+        logger.error "Get error on driver shutdown #{e.inspect}: #{e.mssage}"
+      end
       @driver = nil
     end
 
@@ -82,9 +86,12 @@ module Blinky
           end
         end
       rescue Timeout::Error => e
-        logger.info("Page load was not complete within #{config.webkit_load_timeout} secs. Saving screenshot forcely...")
+        logger.info("Page load was not complete within #{config.page_complete_timeout} secs. Saving screenshot forcely...")
       end
-      raise URILoadFailed.new("Status code is nil. It might fail to contant server.") unless driver.status_code
+      unless driver.status_code
+        renew_driver # for safe
+        raise URILoadFailed.new("Status code is nil. It might fail to contant server.")
+      end
       driver.execute_script %q{
         if (!document.body.bgColor) { document.body.bgColor = 'white'; }
         document.body.style.overflow = 'hidden';
