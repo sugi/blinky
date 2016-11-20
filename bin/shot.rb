@@ -1,15 +1,15 @@
 #!/usr/bin/ruby
-require 'webshot'
+require 'blinky'
 
-conffile = File.join(File.dirname(__FILE__), '..', 'webshot-conf.yml')
+conffile = File.join(File.dirname(__FILE__), '..', 'blinky-conf.yml')
 if File.exists? conffile
-  WebShot.read_config_file conffile
+  Blinky.read_config_file conffile
 end
 
-storage = WebShot::Storage.new
-renderer = WebShot::Renderer.new
-logger = WebShot::Utils.new_logger progname: 'ShotWorker'
-config = WebShot.config
+storage = Blinky::Storage.new
+renderer = Blinky::Renderer.new
+logger = Blinky::Utils.new_logger progname: 'ShotWorker'
+config = Blinky.config
 
 count = 0
 reqlimit = config.shot_max_request.to_i != 0 ? config.shot_max_request.to_i : nil
@@ -25,7 +25,7 @@ storage.dequeue do |req|
     storage.push_result req, e.message, true
   end
   if reqlimit && count >= reqlimit
-    logger.warn "Shot max request has been exceeded (#{WebShot.config.shot_max_request}), exit process!"
+    logger.warn "Shot max request has been exceeded (#{Blinky.config.shot_max_request}), exit process!"
     exit
   end
 end

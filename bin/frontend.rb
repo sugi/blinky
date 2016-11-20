@@ -1,12 +1,12 @@
 #!/usr/bin/ruby
 #
-# WebShot - Web site thumbnail service with webkit
+# Blinky - Web site thumbnail service with webkit
 #
 
 $: << 'lib'
-require 'webshot/version'
-require 'webshot/errors'
-require 'webshot/storage'
+require 'blinky/version'
+require 'blinky/errors'
+require 'blinky/storage'
 require 'sinatra'
 require "sinatra/config_file"
 require 'haml'
@@ -21,7 +21,7 @@ set :root, (Pathname.new(__FILE__) + '..').dirname
 if ENV["RACK_ENV"] == "deployment"
   set :environment, :production
 end
-conffile = "#{settings.root}/webshot-conf.yml"
+conffile = "#{settings.root}/blinky-conf.yml"
 File.exists?(conffile) and
   config_file conffile # load setting to set :environment
 
@@ -35,10 +35,10 @@ set :server, %w[puma thin unicorn mongrel webrick]
 
 if File.exists?(conffile)
   config_file conffile
-  WebShot.read_config_file "#{settings.root}/webshot-conf.yml"
+  Blinky.read_config_file "#{settings.root}/blinky-conf.yml"
 end
 
-SHOT_STORE = WebShot::Storage.new(nil, mq_threaded: false)
+SHOT_STORE = Blinky::Storage.new(nil, mq_threaded: false)
 
 before do
   logger.progname = 'WebShopt::Frontend'
@@ -54,13 +54,13 @@ helpers do
 end
 
 def fetch
-  wreq = WebShot::Request.from_rack request, params
+  wreq = Blinky::Request.from_rack request, params
   begin
     wreq.validate!
-  rescue WebShot::InvalidURI => e
+  rescue Blinky::InvalidURI => e
     logger.warn "Deny invalid URI: '#{wreq.uri}'"
     halt 400, 'Invalid URI'
-  rescue WebShot::ForbiddenURI => e
+  rescue Blinky::ForbiddenURI => e
     logger.warn "Deny forbidden URI: '#{wreq.uri}'"
     halt 403, 'Forbidden URI'
   end

@@ -1,16 +1,16 @@
 #!/usr/bin/ruby
 #
-# WebShot - Web site thumbnail service with webkit
+# Blinky - Web site thumbnail service with webkit
 #
 
-require 'webshot'
+require 'blinky'
 
-WebShot.configure do |c|
+Blinky.configure do |c|
   c.loglevel = Logger::DEBUG
 end
 
-ren = WebShot::Renderer.new
-req = WebShot::Request.new uri: ARGV.first || 'http://ruby-lang.org/', imgsize: [400, 400], winsize: [1200, 1600]
+ren = Blinky::Renderer.new
+req = Blinky::Request.new uri: ARGV.first || 'http://ruby-lang.org/', imgsize: [400, 400], winsize: [1200, 1600]
 File.open('screenshot.png', 'w') do |f|
   f << ren.render(req)
 end

@@ -1,18 +1,18 @@
 #!/bin/bash
-: ${APP_HOME_DIR:=/webshot}
+: ${APP_HOME_DIR:=/blinky}
 : ${APP_UID:=800}
 : ${APP_GID:=800}
 : ${APP_CMD:=exec bundle exec ruby -Ilib frontend.rb -o 0}
 
-if [ "$(id -g webshot)" -ne "${APP_GID}" ]; then
-  groupmod --non-unique --gid "${APP_GID}" webshot
+if [ "$(id -g blinky)" -ne "${APP_GID}" ]; then
+  groupmod --non-unique --gid "${APP_GID}" blinky
 fi
-if [ "$(id -u webshot)" -ne "${APP_UID}" ]; then
-  usermod --non-unique --uid "${APP_UID}" webshot
+if [ "$(id -u blinky)" -ne "${APP_UID}" ]; then
+  usermod --non-unique --uid "${APP_UID}" blinky
 fi
 
-chown -h webshot:webshot /webshot
-chown -fR webshot:webshot /webshot/.cache # for fontconfig cache
+chown -h blinky:blinky /blinky
+chown -fR blinky:blinky /blinky/.cache # for fontconfig cache
 
 cd "${APP_HOME_DIR}"
-exec su -p -s /bin/bash -c "${APP_CMD}" webshot
+exec su -p -s /bin/bash -c "${APP_CMD}" blinky

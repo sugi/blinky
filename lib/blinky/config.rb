@@ -1,7 +1,7 @@
 require 'logger'
 require 'yaml'
 
-module WebShot
+module Blinky
   class Config
     class << self
       def modify

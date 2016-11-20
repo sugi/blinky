@@ -1,9 +1,9 @@
 #!/usr/bin/ruby
-require 'webshot'
+require 'blinky'
 
-WebShot.configure do |c|
+Blinky.configure do |c|
   c.loglevel = Logger::DEBUG
 end
 
-s = WebShot::Storage.new(File.join(Dir.pwd, 'cache'))
+s = Blinky::Storage.new(File.join(Dir.pwd, 'cache'))
 s.flush

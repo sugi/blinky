@@ -1,16 +1,16 @@
-require 'webshot/version'
-require 'webshot/request'
+require 'blinky/version'
+require 'blinky/request'
 require 'rmagick'
 
-module WebShot
+module Blinky
   module MagickEffector
     module_function
 
     def metadata(m_img, metadata = {})
       {
-        'Software'           => 'WebShot',
-        'WebShot::Version'   => WebShot::VERSION,
-        'WebShot::Timestamp' => Time.now.to_i,
+        'Software'           => 'Blinky',
+        'Blinky::Version'   => Blinky::VERSION,
+        'Blinky::Timestamp' => Time.now.to_i,
       }.merge(metadata).each do |key, val|
         m_img[key] = val.to_s
       end
@@ -33,7 +33,7 @@ module WebShot
 
     def gen_waitimage(req)
       img = gen_emptyimage(req.imgsize_x, req.imgsize_y)
-      img = metadata(img, 'WebShot::URI' => req.uri)
+      img = metadata(img, 'Blinky::URI' => req.uri)
       gc = Magick::Draw.new
       gc.stroke('transparent')
       gc.font_family('times')
@@ -59,7 +59,7 @@ module WebShot
 
     def gen_failimage(req)
       img = gen_emptyimage(req.imgsize_x, req.imgsize_y)
-      img = metadata(img, 'WebShot::URI' => req.uri)
+      img = metadata(img, 'Blinky::URI' => req.uri)
       gc = Magick::Draw.new
       gc.stroke('transparent')
       gc.font_family('times')
@@ -89,7 +89,7 @@ module WebShot
     end
 
     def all(m_img, req)
-      m_img = metadata(m_img, 'WebShot::URI' => req.uri)
+      m_img = metadata(m_img, 'Blinky::URI' => req.uri)
       req.effect and
         m_img = shadow(m_img)
       ret = resize(m_img, req.real_imgsize_x, req.real_imgsize_y)

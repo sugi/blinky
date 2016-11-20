@@ -1,9 +1,9 @@
-require 'webshot/config'
+require 'blinky/config'
 
-module WebShot
+module Blinky
   module Utils
     def config
-      WebShot.config
+      Blinky.config
     end
 
     def logger
@@ -13,11 +13,11 @@ module WebShot
 
     module_function
     def new_logger(opts = {})
-      conf = WebShot.config
+      conf = Blinky.config
       logger = conf.logger_class.new(conf.logger_out)
       {
         level: conf.loglevel,
-        progname: 'WebShot',
+        progname: 'Blinky',
       }.merge(opts).each do |key, val|
         logger.public_send "#{key}=", val
       end

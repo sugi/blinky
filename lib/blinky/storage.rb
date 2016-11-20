@@ -1,13 +1,13 @@
 require 'pstore'
-require 'webshot/version'
-require 'webshot/utils'
-require 'webshot/request'
-require 'webshot/magick_effector'
+require 'blinky/version'
+require 'blinky/utils'
+require 'blinky/request'
+require 'blinky/magick_effector'
 require 'bunny'
 require 'fileutils'
 require 'thread'
 
-module WebShot
+module Blinky
   class Storage
     include Utils
     @@instances = {}

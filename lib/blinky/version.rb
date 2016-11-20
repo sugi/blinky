@@ -1,3 +1,3 @@
-module WebShot
+module Blinky
   VERSION = '2.0.0'
 end
