@@ -28,6 +28,7 @@ module Blinky
       @driver_no += 1
       dopts = {
         timeout: config.webkit_load_timeout,
+        js_errors: false,
         phantomjs_options: %w(--ignore-ssl-errors=true --local-url-access=false --ssl-protocol=ANY),
         #phantomjs_logger: config.logger_out,
         phantomjs_logger: "",
