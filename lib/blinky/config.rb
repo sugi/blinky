@@ -14,7 +14,7 @@ module Blinky
     end # class << self
 
     attr_accessor :loglevel, :logger_class, :logger_out,
-    :storage_dir, :amq_uri, :proxy, :failimage_maxtry,
+    :storage_dir, :amq_uri, :proxy_uri, :failimage_maxtry,
     :webkit_max_request, :webkit_renew_sleep, :webkit_crash_retry,
     :webkit_load_timeout, :shot_max_request, :queue_refresh_time,
     :image_refresh_time, :webkit_load_retry, :page_complete_timeout
@@ -28,7 +28,7 @@ module Blinky
         loglevel: Logger::INFO,
         storage_dir: File.join(Dir.pwd, 'cache'),
         amq_uri: "amqp://guest:guest@localhost:5672",
-        proxy: nil,
+        proxy_uri: nil,
         failimage_maxtry: 5,
         webkit_max_request: 50,
         webkit_crash_retry: 3,
@@ -50,8 +50,7 @@ module Blinky
 
       # fallback environment keys
       {
-        proxy: 'http_proxy',
-        amq_uri: 'AMQ_URI',
+        proxy_uri: 'http_proxy',
       }.each do |key, envkey|
         ENV["BL_#{key.upcase}"] and next
         ENV[envkey] or next

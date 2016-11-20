@@ -32,8 +32,8 @@ module Blinky
         #phantomjs_logger: config.logger_out,
         phantomjs_logger: "",
       }
-      if config.proxy
-        dopts[:phantomjs_options] << "--proxy=#{config.proxy}"
+      if config.proxy_uri
+        dopts[:phantomjs_options] << "--proxy=#{config.proxy_uri}"
       end
       if logger.level == Logger::DEBUG
         wrap_logger = Object.new
