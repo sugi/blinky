@@ -134,7 +134,7 @@ module Blinky
       if is_error
         ret[:message] = blob_or_msg
         ret[:error] = true
-        logger.info "Add result to queue: failed (#{blob_or_msg}) #{req.to_hash.inspect}"
+        logger.info "Add result to queue: FAILED (#{blob_or_msg}) #{req.to_hash.inspect}"
       else
         logger.info "Add result to queue: blob length = #{blob_or_msg.to_s.length} (#{req.uri})"
         ret[:blob] = blob_or_msg

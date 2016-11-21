@@ -18,7 +18,7 @@ module Blinky
     :webkit_max_request, :webkit_renew_sleep, :webkit_crash_retry,
     :webkit_load_timeout, :shot_max_request, :queue_refresh_time,
     :image_refresh_time, :webkit_load_retry, :page_complete_timeout,
-    :queue_request_prefetch, :queue_result_prefetch
+    :queue_request_prefetch, :queue_result_prefetch, :shot_concurrency
     attr_reader :forbidden_url_pattern
 
     def initialize
@@ -42,6 +42,7 @@ module Blinky
         image_refresh_time: 3 * 24 * 3600,
         queue_request_prefetch: 10,
         queue_result_prefetch: 1024,
+        shot_concurrency: 1,
       }.each do |key, default|
         envkey = "BL_#{key.upcase}"
         if ENV[envkey].nil? || ENV[envkey].empty?
