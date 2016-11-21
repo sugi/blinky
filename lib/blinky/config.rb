@@ -17,7 +17,8 @@ module Blinky
     :storage_dir, :amq_uri, :proxy_uri, :failimage_maxtry,
     :webkit_max_request, :webkit_renew_sleep, :webkit_crash_retry,
     :webkit_load_timeout, :shot_max_request, :queue_refresh_time,
-    :image_refresh_time, :webkit_load_retry, :page_complete_timeout
+    :image_refresh_time, :webkit_load_retry, :page_complete_timeout,
+    :queue_request_prefetch, :queue_result_prefetch
     attr_reader :forbidden_url_pattern
 
     def initialize
@@ -39,6 +40,8 @@ module Blinky
         forbidden_url_pattern: %r{^https?://(?:[^.]+$|10\.|172\.(?:1[6-9]|2[0-9]|3[01])\.|192\.168\.|127\.|0\.|169\.254\.|2(?:2[4-9]|[3-5][0-9])\.)},
         queue_refresh_time: 3 * 3600,
         image_refresh_time: 3 * 24 * 3600,
+        queue_request_prefetch: 10,
+        queue_result_prefetch: 1024,
       }.each do |key, default|
         envkey = "BL_#{key.upcase}"
         if ENV[envkey].nil? || ENV[envkey].empty?

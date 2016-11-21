@@ -51,7 +51,7 @@ module Blinky
       @mutexes[:req].synchronize do
         @mq_req and return @mq_req
         @mq_ch_req = mq_conn.create_channel
-        @mq_ch_req.prefetch(10)
+        @mq_ch_req.prefetch(config.queue_request_prefetch)
         @mq_req = @mq_ch_req.queue("shot-requests", arguments: {'x-max-priority' => 10})
       end
     end
@@ -60,7 +60,7 @@ module Blinky
       @mutexes[:ret].synchronize do
         @mq_ret and return @mq_ret
         @mq_ch_ret = mq_conn.create_channel
-        @mq_ch_ret.prefetch(1024)
+        @mq_ch_ret.prefetch(config.queue_result_prefetch)
         @mq_ret = @mq_ch_ret.queue("shot-results", durable: true)
       end
     end
