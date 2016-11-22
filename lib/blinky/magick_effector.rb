@@ -93,7 +93,7 @@ module Blinky
       req.effect and
         m_img = shadow(m_img)
       ret = resize(m_img, req.real_imgsize_x, req.real_imgsize_y)
-      m_img.destroy!
+      ret != m_img and m_img.destroy!
       ret
     end
   end
