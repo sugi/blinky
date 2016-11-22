@@ -122,7 +122,7 @@ module Blinky
       end
       begin
         driver.reset!
-      rescue Capybara::Poltergeist::BrowserError => e
+      rescue Capybara::Poltergeist::BrowserError, Capybara::Poltergeist::DeadClient => e
         logger.error "Get error on resetting driver #{e.inspect}: #{e.message}"
         renew_driver
       end
