@@ -32,7 +32,7 @@ render_proc = proc { |logger|
       logger.error "Screenshot FAILED by Timeout. This means system may be in heavy load. Skipping to add result and just drop the request."
     rescue => e
       logger.error "Screenshot FAILED with unknown error, dropping the request. [#{e.class.to_s}] #{e.message}\n#{e.backtrace.pretty_inspect}"
-      render.renew_driver # for safe
+      renderer.renew_driver # for safe
     end
   end
 }
@@ -61,7 +61,7 @@ storage.mq_req.subscribe(block: true, manual_ack: true) do |del_info, props, bod
     begin
       t.join
     rescue => e
-      logger.error "Exception in render thread: #{e.class.to_s}; #{e.message}#{logger.level == Logger::DEBUG ? "\n" + e.backtrace.pretty_inspect : ''}"
+      logger.error "Exception in render thread: #{e.class.to_s}; #{e.message}#{e.backtrace.pretty_inspect}"
     end
     render_threads[i] = Thread.new(Blinky::Utils.new_logger progname: "ShotWorker-#{i+1}", &render_proc)
   end
