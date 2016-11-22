@@ -25,9 +25,14 @@ render_proc = proc { |logger|
       Timeout::timeout((config.webkit_load_timeout * (config.webkit_load_retry + 1) + config.page_complete_timeout) + 10) {
         ret_queue.push [tag, [req, renderer.render(req)]]
       }
-    rescue => e
+    rescue Blinky::URILoadFailed => e
       logger.error "Screenshot FAILED. [#{e.class.to_s}] #{e.message}#{logger.level == Logger::DEBUG ? "\n" + e.backtrace.pretty_inspect : ''}"
       ret_queue.push [tag, [req, e.message, true]]
+    rescue Timeout::Error => e
+      logger.error "Screenshot FAILED by Timeout. This means system may be in heavy load. Skipping to add result and just drop the request."
+    rescue => e
+      logger.error "Screenshot FAILED with unknown error, dropping the request. [#{e.class.to_s}] #{e.message}\n#{e.backtrace.pretty_inspect}"
+      render.renew_driver # for safe
     end
   end
 }
