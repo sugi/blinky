@@ -29,9 +29,9 @@ render_proc = proc { |logger|
       logger.error "Screenshot FAILED. [#{e.class.to_s}] #{e.message}#{logger.level == Logger::DEBUG ? "\n" + e.backtrace.pretty_inspect : ''}"
       ret_queue.push [tag, [req, e.message, true]]
     rescue Timeout::Error => e
-      logger.error "Screenshot FAILED by Timeout. This means system may be in heavy load. Skipping to add result and just drop the request."
+      logger.error "Screenshot FAILED by Timeout. This means system may be in heavy load. Skipping the request (#{req.uri})."
     rescue => e
-      logger.error "Screenshot FAILED with unknown error, dropping the request. [#{e.class.to_s}] #{e.message}\n#{e.backtrace.pretty_inspect}"
+      logger.error "Screenshot FAILED with unknown error, skipping the request. [#{e.class.to_s}] #{e.message}\n#{e.backtrace.pretty_inspect}"
       renderer.renew_driver # for safe
     end
   end
