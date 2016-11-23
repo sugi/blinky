@@ -22,17 +22,19 @@ render_proc = proc { |logger|
     count += 1
     logger.info "Starting process request ##{count}#{reqlimit ? "/#{reqlimit}" : ""} (#{req.uri})"
     begin
-      Timeout::timeout((config.webkit_load_timeout * (config.webkit_load_retry + 1) + config.page_complete_timeout) + 10) {
+      Timeout::timeout(config.webkit_load_timeout * (config.webkit_load_retry + 2) + config.page_complete_timeout + 10) {
         ret_queue.push [tag, [req, renderer.render(req)]]
       }
     rescue Blinky::URILoadFailed => e
       logger.error "Screenshot FAILED. [#{e.class.to_s}] #{e.message}#{logger.level == Logger::DEBUG ? "\n" + e.backtrace.pretty_inspect : ''}"
       ret_queue.push [tag, [req, e.message, true]]
     rescue Timeout::Error => e
-      logger.error "Screenshot FAILED by Timeout. This means system may be in heavy load. Skipping the request (#{req.uri})."
+      logger.error "Screenshot FAILED by Timeout. This means system may be in heavy load. Drop the request (#{req.uri})."
+      ret_queue.push [tag, nil]
     rescue => e
-      logger.error "Screenshot FAILED with unknown error, skipping the request. [#{e.class.to_s}] #{e.message}\n#{e.backtrace.pretty_inspect}"
+      logger.error "Screenshot FAILED with unknown error, drop the request. [#{e.class.to_s}] #{e.message}\n#{e.backtrace.pretty_inspect}"
       renderer.renew_driver # for safe
+      ret_queue.push [tag, nil]
     end
   end
 }
@@ -44,7 +46,7 @@ end
 ret_thread = Thread.new do
   while qe = ret_queue.pop
     tag, ret = qe
-    storage.push_result *ret
+    ret and storage.push_result *ret
     storage.mq_ch_req.ack(tag)
   end
 end
