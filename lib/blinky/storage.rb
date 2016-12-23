@@ -37,7 +37,8 @@ module Blinky
 
     def mq_conn
       @mutexes[:conn].synchronize do
-        @mq_conn and return @mq_conn
+        @mq_conn && @mq_conn.open? and return @mq_conn
+        @mq_req = @mq_ch_req = @mq_ret = @mq_ch_req = nil
         conn = @mq_conn = Bunny.new(amq_uri, threaded: mq_threaded, logger: Utils.new_logger(progname: 'Bunny'))
         @mq_conn.start
         at_exit {
@@ -47,10 +48,25 @@ module Blinky
       end
     end
 
+    def mq_create_channel
+      begin
+        return mq_conn.create_channel
+      rescue NoMethodError => e
+        if !@mq_conn || !@mq_conn.open? || !@mq_conn.channel_id_allocator
+          # trap error on dead connection...
+          @mq_conn = nil
+          return mq_conn.create_channel
+        else
+          raise e
+        end
+      end
+      raise 'Should not be reached'
+    end
+
     def mq_req
       @mutexes[:req].synchronize do
         @mq_req and return @mq_req
-        @mq_ch_req = mq_conn.create_channel
+        @mq_ch_req = mq_create_channel
         @mq_ch_req.prefetch(config.queue_request_prefetch)
         @mq_req = @mq_ch_req.queue("shot-requests", arguments: {'x-max-priority' => 10})
       end
@@ -59,7 +75,7 @@ module Blinky
     def mq_ret
       @mutexes[:ret].synchronize do
         @mq_ret and return @mq_ret
-        @mq_ch_ret = mq_conn.create_channel
+        @mq_ch_ret = mq_create_channel
         @mq_ch_ret.prefetch(config.queue_result_prefetch)
         @mq_ret = @mq_ch_ret.queue("shot-results", durable: true)
       end
