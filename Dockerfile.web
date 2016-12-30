@@ -4,8 +4,13 @@ RUN apt-get update
 RUN apt-get -y upgrade; apt-get clean
 RUN apt-get -y install gsfonts; apt-get clean
 RUN adduser --system --home /blinky --group --uid 800 --disabled-password blinky
-ADD ./ /blinky
+COPY Gemfile* /blinky/
 RUN cd /blinky && bundle --without=shot
+COPY runapp /blinky/
+COPY bin    /blinky/bin
+COPY lib    /blinky/lib
+COPY views  /blinky/views
+COPY public /blinky/public
 EXPOSE 4567
 ENV RACK_ENV deployment
 ENV APP_CMD exec bundle exec ruby -Ilib bin/frontend.rb -o 0
