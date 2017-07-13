@@ -15,4 +15,6 @@ chown -h blinky:blinky /blinky
 chown -fR blinky:blinky /blinky/.cache # for fontconfig cache
 
 cd "${APP_HOME_DIR}"
+export HOME="${APP_HOME_DIR}"
+export LANG="C.UTF-8"
 exec su -p -s /bin/bash -c "${APP_CMD}" blinky
