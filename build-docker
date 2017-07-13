@@ -1,0 +1,2 @@
+#!/bin/sh
+docker-compose -f examples/docker-compose.yml --project-name blinky build

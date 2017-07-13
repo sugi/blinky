@@ -1,19 +1,19 @@
-FROM ruby:2.3
+FROM ruby:2.4
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update
 RUN apt-get -y upgrade; apt-get clean
 RUN apt-get -y install libfontconfig1; apt-get clean
 RUN adduser --system --home /blinky --group --uid 800 --disabled-password blinky
 RUN wget -nv -O- http://mirrors.arege.jp/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2 | tar -C /opt -jx && ln -s /opt/phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin
-# get fonts from unstable
+# get fonts from stretch
 RUN mkdir /tmp/dp && cd /tmp/dp && \
     wget -nv http://httpredir.debian.org/debian/pool/main/t/ttf-ancient-fonts/fonts-symbola_2.59-1_all.deb \
       http://httpredir.debian.org/debian/pool/main/f/fonts-noto/fonts-noto-hinted_20161116-1_all.deb \
       http://httpredir.debian.org/debian/pool/main/f/fonts-noto/fonts-noto_20161116-1_all.deb \
       http://httpredir.debian.org/debian/pool/main/f/fonts-noto/fonts-noto-unhinted_20161116-1_all.deb \
       http://httpredir.debian.org/debian/pool/main/f/fonts-noto/fonts-noto-mono_20161116-1_all.deb \
-      http://httpredir.debian.org/debian/pool/main/f/fonts-noto-cjk/fonts-noto-cjk_1.004+repack2-1_all.deb \
-    && dpkg -i *.deb && rm *.deb && rmdir /tmp/dp
+      http://httpredir.debian.org/debian/pool/main/f/fonts-noto-cjk/fonts-noto-cjk_1.004+repack2-2_all.deb \
+    && dpkg -i *.deb && cd / && rm -r /tmp/dp
 COPY Gemfile* /blinky/
 RUN cd /blinky && bundle --without=web
 COPY runapp /blinky/
