@@ -105,7 +105,7 @@ module Blinky
       driver_req_count > config.webkit_max_request and renew_driver
       logger.info "Start rendering, URI: #{req.uri}"
       logger.debug "Render request detail: #{req.to_hash.dup.tap{|r| r.delete(:uri)}.inspect}"
-      tmppath = File.join Dir.tmpdir, Dir::Tmpname.make_tmpname('ss-', '.png')
+      tmppath = File.join Dir.tmpdir, "ss-#{Time.now.strftime("%Y%m%d")}-#{rand(0x100000000).to_s(36)}.png"
       tries = 0
       begin
         tries += 1

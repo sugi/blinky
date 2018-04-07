@@ -1,4 +1,4 @@
-FROM ruby:2.4
+FROM ruby:2.5
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get -y upgrade && apt-get clean
 RUN adduser --system --home /blinky --group --uid 800 --disabled-password blinky
