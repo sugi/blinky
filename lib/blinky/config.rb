@@ -48,7 +48,7 @@ module Blinky
         if ENV[envkey].nil? || ENV[envkey].empty?
           public_send "#{key}=", default
         else
-          public_send "#{key}=", default.kind_of?(Fixnum) ? ENV[envkey].to_i : ENV[envkey]
+          public_send "#{key}=", default.kind_of?(Integer) ? ENV[envkey].to_i : ENV[envkey]
         end
       end
 
