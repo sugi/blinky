@@ -2,22 +2,13 @@ FROM ruby:2.5
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get -y upgrade && apt-get clean
 RUN adduser --system --home /blinky --group --uid 800 --disabled-password blinky
+RUN apt-get -y install libfontconfig1 fonts-symbola fonts-noto fonts-noto-hinted fonts-noto-unhinted fonts-noto-mono fonts-noto-cjk && apt-get clean
+RUN wget -nv -O- http://mirrors.arege.jp/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2 | tar -C /opt -jx && ln -s /opt/phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin
 COPY Gemfile* runapp /blinky/
+RUN cd /blinky && bundle --without=web
 COPY bin    /blinky/bin
 COPY lib    /blinky/lib
 COPY views  /blinky/views
 COPY public /blinky/public
-RUN apt-get -y install libfontconfig1 && apt-get clean
-RUN wget -nv -O- http://mirrors.arege.jp/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2 | tar -C /opt -jx && ln -s /opt/phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin
-# get fonts from stretch
-RUN mkdir /tmp/dp && cd /tmp/dp && \
-    wget -nv http://httpredir.debian.org/debian/pool/main/t/ttf-ancient-fonts/fonts-symbola_2.60-1_all.deb \
-      http://httpredir.debian.org/debian/pool/main/f/fonts-noto/fonts-noto-hinted_20171026-2_all.deb \
-      http://httpredir.debian.org/debian/pool/main/f/fonts-noto/fonts-noto_20171026-2_all.deb \
-      http://httpredir.debian.org/debian/pool/main/f/fonts-noto/fonts-noto-unhinted_20171026-2_all.deb \
-      http://httpredir.debian.org/debian/pool/main/f/fonts-noto/fonts-noto-mono_20171026-2_all.deb \
-      http://httpredir.debian.org/debian/pool/main/f/fonts-noto-cjk/fonts-noto-cjk_20170601+repack1-2_all.deb \
-    && dpkg -i *.deb && cd / && rm -r /tmp/dp
-RUN cd /blinky && bundle --without=web
 ENV APP_CMD "ulimit -t 3600; while /usr/bin/timeout -k 30 3h bundle exec ruby -Ilib bin/shot.rb; do sleep 3; done"
 CMD /blinky/runapp

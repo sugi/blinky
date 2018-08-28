@@ -2,9 +2,14 @@ version: '2'
 services:
   rabbitmq:
     image: 'rabbitmq:3-management'
+    hostname: blinky-mq
+    restart: unless-stopped
     ports:
-      #- "5672:5672" # Node port
+      #- "5672:5672"   # Node port
       - "15672:15672" # managiment port
+    environment:
+      RABBITMQ_DEFAULT_USER: change
+      RABBITMQ_DEFAULT_PASS: this
   web:
     build:
       context: ..
@@ -14,8 +19,8 @@ services:
     links:
       - rabbitmq
     environment:
-      BL_AMQ_URI: "amqp://guest:guest@rabbitmq:5672"
-    restart: on-failure
+      BL_AMQ_URI: "amqp://change:this@rabbitmq:5672"
+    restart: unless-stopped
     volumes:
       - storage:/blinky/cache
   shot:
@@ -26,10 +31,12 @@ services:
       - 8.8.8.8
     links:
       - rabbitmq
+    depends_on:
+      - rabbitmq
     environment:
-      BL_AMQ_URI: "amqp://guest:guest@rabbitmq:5672"
+      BL_AMQ_URI: "amqp://change:this@rabbitmq:5672"
       BL_SHOT_MAX_REQUEST: 20
-    restart: on-failure
+    restart: unless-stopped
     cpu_shares: 128
   flush:
     build: 
@@ -37,9 +44,11 @@ services:
       dockerfile: Dockerfile.flush
     links:
       - rabbitmq
+    depends_on:
+      - rabbitmq
     environment:
-      BL_AMQ_URI: "amqp://guest:guest@rabbitmq:5672"
-    restart: on-failure
+      BL_AMQ_URI: "amqp://change:this@rabbitmq:5672"
+    restart: unless-stopped
     volumes:
       - storage:/blinky/cache
 volumes:

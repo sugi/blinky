@@ -2,12 +2,12 @@ FROM ruby:2.5
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get -y upgrade && apt-get clean
 RUN adduser --system --home /blinky --group --uid 800 --disabled-password blinky
+RUN apt-get -y install gsfonts && apt-get clean
 COPY Gemfile* runapp /blinky/
+RUN cd /blinky && bundle --without="web shot"
 COPY bin    /blinky/bin
 COPY lib    /blinky/lib
 COPY views  /blinky/views
 COPY public /blinky/public
-RUN apt-get -y install gsfonts && apt-get clean
-RUN cd /blinky && bundle --without="web shot"
 ENV APP_CMD exec bundle exec ruby -Ilib bin/flush.rb
 CMD /blinky/runapp
