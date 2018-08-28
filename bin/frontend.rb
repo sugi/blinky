@@ -70,19 +70,19 @@ end
 def shot
   ret = fetch
   logger.debug "Shot return: #{ret.to_hash.dup.tap{|r| r.delete(:blob)}.inspect} (blob length=#{ret[:blob].to_s.length})"
-  headers = {
-    'Content-Type' => 'image/png',
-  }
   ret[:cache_control] and
     cache_control *[*ret[:cache_control]]
   ret[:etag]  and etag ret[:etag]
   ret[:mtime] and last_modified ret[:mtime]
-  halt 200, headers, ret[:blob]
+  if ret[:path]
+    send_file ret[:path], type: 'image/png', filename: nil, last_modified: ret[:mtime]
+  else
+    halt 200, {'Content-Type' => 'image/png'}, ret[:blob]
+  end
 end
 
 def do_status
   ret = fetch
-  ret[:length] = ret[:blob].to_s.length
   ret.delete :blob
   cache_control :no_cache
   content_type "application/json; charset=utf-8"

@@ -90,15 +90,21 @@ module Blinky
         info = ps.to_hash
       end
       unless File.exists? path
+        blob = MagickEffector.gen_waitimage_blob(req)
         return info.merge(mtime: info[:queued_at], uri: req.uri,
                           cache_control: :no_cache, status: 'waiting',
                           etag: req.ident + '@' + info[:queued_at].to_f.to_s,
-                          blob: MagickEffector.gen_waitimage_blob(req))
+                          path: nil, blob: blob, length: blob.length)
       end
 
-      info.merge(mtime: info[:updated_at], uri: req.uri, status: 'stable',
+      info.update(mtime: info[:updated_at], uri: req.uri, status: 'stable',
                  etag: req.ident + '@' + info[:updated_at].to_f.to_s,
-                 cache_control: :public, blob: File.read(path, encoding: 'ascii-8bit'))
+                 cache_control: :public, path: path, length: File.size(path))
+      def [](key)
+        return super if key != 'blob'
+        File.read(fetch(path), encoding: 'ascii-8bit')
+      end
+      info
     end
 
     def auto_enqueue(req)
