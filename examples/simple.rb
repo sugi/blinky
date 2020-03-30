@@ -10,7 +10,7 @@ Blinky.configure do |c|
 end
 
 ren = Blinky::Renderer.new
-req = Blinky::Request.new uri: ARGV.first || 'http://ruby-lang.org/', imgsize: [400, 400], winsize: [1200, 1600]
+req = Blinky::Request.new uri: ARGV.first || 'https://www.ruby-lang.org/', imgsize: [400, 400], winsize: [1200, 1600]
 File.open('screenshot.png', 'w') do |f|
   f << ren.render(req)
 end

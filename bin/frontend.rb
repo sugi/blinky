@@ -92,7 +92,7 @@ end
 get '/show' do
   @uri = params['uri'].to_s.strip
   if @uri.empty?
-    @uri = 'http://ruby-lang.org/'
+    @uri = 'https://www.ruby-lang.org/'
   elsif @uri !~ %r{^https?://}
     @uri = "http://#{@uri}"
   end
