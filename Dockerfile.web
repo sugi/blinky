@@ -1,6 +1,6 @@
 FROM ruby:2.6
 ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update && apt-get -y upgrade && apt-get clean
+RUN apt-get update && apt-get -y upgrade && apt-get install libjemalloc2 && apt-get clean
 RUN adduser --system --home /blinky --group --uid 800 --disabled-password blinky
 RUN gem install bundler
 RUN apt-get -y install gsfonts && apt-get clean
@@ -13,4 +13,5 @@ COPY public /blinky/public
 EXPOSE 4567
 ENV RACK_ENV deployment
 ENV APP_CMD exec bundle exec ruby -Ilib bin/frontend.rb -o 0
+ENV LD_PRELOAD libjemalloc.so.2
 CMD /blinky/runapp
