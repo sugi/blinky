@@ -31,7 +31,7 @@ module Blinky
         js_errors: false,
         phantomjs_options: %w(--ignore-ssl-errors=true --local-url-access=false --ssl-protocol=ANY),
         #phantomjs_logger: config.logger_out,
-        phantomjs_logger: nil,
+        phantomjs_logger: File.open('/dev/null', 'w')
       }
       if config.proxy_uri
         dopts[:phantomjs_options] << "--proxy=#{config.proxy_uri}"
