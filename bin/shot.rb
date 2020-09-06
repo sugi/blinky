@@ -1,5 +1,6 @@
 #!/usr/bin/ruby
 require 'blinky'
+require 'socket'
 
 conffile = File.join(File.dirname(__FILE__), '..', 'blinky-conf.yml')
 if File.exists? conffile
@@ -20,6 +21,15 @@ render_proc = proc { |logger|
   while qe = req_queue.pop
     tag, req = qe
     count += 1
+    if req.uri =~ %r{^[a-z]+://([^/]+)}
+      begin
+        Socket.gethostbyname $1
+      rescue SocketError => e
+        logger.info "Cannot resolve target host $1, skip the request: #{e.message}"
+        ret_queue.push [tag, [req, e.message, true]]
+        next
+      end
+    end
     logger.info "Starting process request ##{count}#{reqlimit ? "/#{reqlimit}" : ""} (#{req.uri})"
     begin
       Timeout::timeout(config.webkit_load_timeout * (config.webkit_load_retry + 2) + config.page_complete_timeout + 10) {
