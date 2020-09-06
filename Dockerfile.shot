@@ -13,4 +13,5 @@ COPY views  /blinky/views
 COPY public /blinky/public
 ENV APP_CMD "ulimit -t 3600; while /usr/bin/timeout -k 30 3h bundle exec ruby -Ilib bin/shot.rb; do sleep 3; done"
 ENV OPENSSL_CONF /etc/ssl/
+ENV LD_PRELOAD libjemalloc.so.2
 CMD /blinky/runapp

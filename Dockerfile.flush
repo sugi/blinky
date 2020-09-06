@@ -11,4 +11,5 @@ COPY lib    /blinky/lib
 COPY views  /blinky/views
 COPY public /blinky/public
 ENV APP_CMD exec bundle exec ruby -Ilib bin/flush.rb
+ENV LD_PRELOAD libjemalloc.so.2
 CMD /blinky/runapp
