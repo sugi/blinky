@@ -11,7 +11,15 @@ COPY bin    /blinky/bin
 COPY lib    /blinky/lib
 COPY views  /blinky/views
 COPY public /blinky/public
+
+RUN wget https://github.com/progrium/entrykit/releases/download/v0.4.0/entrykit_0.4.0_Linux_x86_64.tgz && \
+  tar -C /usr/local/bin -xvf entrykit_0.4.0_Linux_x86_64.tgz && \
+  rm -f entrykit_0.4.0_Linux_x86_64.tgz && \
+  entrykit --symlink 
 ENV APP_CMD "ulimit -t 3600; while /usr/bin/timeout -k 30 3h bundle exec ruby -Ilib bin/shot.rb; do sleep 3; done"
 ENV OPENSSL_CONF /etc/ssl/
 ENV LD_PRELOAD libjemalloc.so.2
 CMD /blinky/runapp
+ENTRYPOINT [ \
+  "prehook", "find /tmp -type f -delete", "--", \
+  "prehook", "rm -rf /blinky/.local/share", "--" ]
