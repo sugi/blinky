@@ -210,6 +210,9 @@ module Blinky
       if uri.nil? || uri.empty? || uri !~ %r{^https?://[^.]+\.[^.]+}
         raise InvalidURI.new("Invalid URI: '#{uri}'")
       end
+      if uri =~ %r{^https?://.+?,https?://}
+        raise InvalidURI.new("Invalid URI: '#{uri}'")
+      end
       if config.forbidden_url_pattern &&
           config.forbidden_url_pattern.match(uri.to_s)
         raise ForbiddenURI.new("Forbidden URI: '#{uri}'")
