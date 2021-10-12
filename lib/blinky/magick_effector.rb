@@ -83,8 +83,8 @@ module Blinky
     end
 
     def gen_emptyimage(width, height)
-      Magick::Image.new(width, height) {
-        self.background_color = 'white'
+      Magick::Image.new(width, height) { |img|
+        img.background_color = 'white'
       }
     end
 
