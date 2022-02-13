@@ -22,7 +22,7 @@ render_proc = proc { |logger|
     tag, req = qe
     if req.uri =~ %r{^[a-z]+://([^/]+)}
       begin
-        Socket.gethostbyname $1
+        Addrinfo.getaddrinfo $1, nil, nil, Socket::SOCK_RAW
       rescue SocketError, ArgumentError => e
         logger.info "Cannot resolve target host #{$1}, skip the request: #{e.message}"
         ret_queue.push [tag, [req, e.message, true]]

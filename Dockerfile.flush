@@ -1,4 +1,4 @@
-FROM ruby:2.7
+FROM ruby:3
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt update && apt -y upgrade && apt install libjemalloc2 && apt clean
 RUN adduser --system --home /blinky --group --uid 800 --disabled-password blinky
