@@ -49,7 +49,7 @@ helpers do
     CGI.escapeHTML(str.to_s)
   end
   def u(str)
-    URI.escape(str.to_s)
+    URI::Parser.new.escape(str.to_s)
   end
 end
 
